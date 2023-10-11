@@ -4,6 +4,7 @@ from App.database import db
 from .person import Person
 
 
+
 class User(Person):
   __tablename__ = 'user'
   username = db.Column(db.String(120), nullable=False, unique=True)
