@@ -19,7 +19,10 @@ def get_user_by_username(username):
     return User.query.filter_by(username=username).first()
 
 def get_user(id):
-    return User.query.get(id)
+    user = User.query.get(id)
+    if user :
+        return user
+    return None
 
 def get_all_users():
     return User.query.all()
