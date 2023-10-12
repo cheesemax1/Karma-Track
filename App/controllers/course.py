@@ -3,6 +3,7 @@ from App.database import db
 from .user import get_user
 
 def create_course(lecturer_id, course_code, course_name):
+
  try:
   course = Course(lecturer_id=lecturer_id, course_code=course_code, course_name=course_name)
   db.session.add(course)
@@ -23,6 +24,8 @@ def get_course(id):
     return course
   return None
 
+
+
 def get_lecturer_courses(lecturer_id):
     return Course.query.filter_by(lecturer_id=lecturer_id).all()
   
@@ -38,3 +41,4 @@ def get_all_courses_json():
         return []
     courses = [courses.toJSON() for course in courses]
     return courses
+

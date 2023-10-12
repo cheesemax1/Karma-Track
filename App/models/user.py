@@ -17,7 +17,7 @@ class User(Person):
                                  backref=db.backref('user'),
                                  lazy='joined')
 
-  def __init__(self, username, password, name="John", user_type='Lecturer'):
+  def __init__(self, username, password, name, user_type):
     self.name = name
     self.username = username
     self.user_type = user_type

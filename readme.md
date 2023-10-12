@@ -72,8 +72,8 @@ user_cli = AppGroup('user', help='User object commands')
 @user_cli.cli.command("create-user")
 @click.argument("username")
 @click.argument("password")
-def create_user_command(username, password):
-    create_user(username, password)
+def create_user_command(name, username, password, user_type):
+    create_user(name, username, password, user_type)
     print(f'{username} created!')
 
 app.cli.add_command(user_cli) # add the group to the cli
