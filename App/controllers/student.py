@@ -54,3 +54,12 @@ def downvote_student(id):
     db.session.add(student)
     return db.session.commit()
   return None
+
+def assign_course(student_id,course_id):
+  course = get_course(course_id)
+  student = get_student(student_id)
+  if course and student:
+    student.courses.append(course)
+    db.session.add(student)
+    return db.session.commit()
+  return None  
