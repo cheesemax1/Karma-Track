@@ -26,9 +26,9 @@ def create_review(user_id, student_id, comment):
 
 def get_review(id):
   review = Review.query.get(id)
-    if review :
-        return review
-    return None
+  if review :
+      return review
+  return None
 
 def get_all_reviews():
   return Review.query.all()
