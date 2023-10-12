@@ -21,7 +21,7 @@ def get_reviews_action():
 
 @review_views.route('/reviews/<int:id>', methods=['GET'])
 def get_review_action(id):
-  return jsonify(get_review_by_id(id))
+  return jsonify(get_review(id))
   
 @review_views.route('/reviews', methods=['POST'])
 def create_review_action():
