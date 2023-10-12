@@ -43,5 +43,5 @@ def create_user_action():
 def show_user_action(user_id):
   user = get_user(user_id)
   if user:
-    return jsonify({'user': user.to_json()})
+    return jsonify({'user': user.toJSON()})
   return jsonify({'error': f"user {user_id} not found"})
