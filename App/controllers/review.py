@@ -6,17 +6,17 @@ from .student import get_student
 # from App.models import User
 
 
-def create_review(user_id, student_id, comment):
+def create_review(lecturer_id, student_id, comment):
   try:
-    review = Review(lecturer_id=user_id,
+    review = Review(lecturer_id=lecturer_id,
                     student_id=student_id,
                     comment=comment)
     db.session.add(review)
-    lecturer = get_user(user_id)
+    lecturer = get_user(lecturer_id)
     student = get_student(student_id)
     if lecturer and student:
-      lecturer.reviews_made.append(review)
-      student.studentreviews.append(review)
+      lecturer.reviews.append(review)
+      student.reviews.append(review)
       db.session.commit()
       return review
   except Exception as e:
@@ -34,13 +34,13 @@ def get_all_reviews():
   return Review.query.all()
 
 def get_all_reviews_json():
-  reviews = Review.query.all()
+  reviews = get_all_reviews()
   if not reviews:
     return []
-  return [review.to_json() for review in reviews]
+  return [review.toJSON() for review in reviews]
 
-def get_reviews_of_student(student_id):
+def get_student_reviews(student_id):
   return Review.query.filter(Review.student_id == student_id).all()
 
-def get_reviews_from_lecturer(id):
-  return Review.query.filter(Review.lecturer_id == id).all()
+def get_lecturer_reviews(lecturer_id):
+  return Review.query.filter(Review.lecturer_id == lecturer_id).all()
