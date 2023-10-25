@@ -16,8 +16,8 @@ def create_user(name, username, password, user_type):
     db.session.rollback()
     return None
 
-def get_user_by_username(username):
-    return User.query.filter_by(username=username).first()
+# def get_user_by_username(username):
+#     return User.query.filter_by(username=username).first()
 
 def get_user(id):
     user = User.query.get(id)
@@ -29,7 +29,7 @@ def get_all_users():
     return User.query.all()
 
 def get_all_users_json():
-    users = User.query.all()
+    users = get_all_users()
     if not users:
         return []
     users = [user.toJSON() for user in users]
@@ -40,7 +40,8 @@ def update_user(id, username):
     if user:
         user.username = username
         db.session.add(user)
-        return db.session.commit()
+        db.session.commit()
+        return user
     return None
 
 def is_admin(id):

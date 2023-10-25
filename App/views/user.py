@@ -5,46 +5,52 @@ from flask_login import current_user, login_required
 from .index import index_views
 
 from App.controllers import (
-    create_user,
-    jwt_authenticate,
-    get_all_users,
-    get_all_users_json,
-    jwt_required,
-    is_admin,
-    get_user,
+  create_user,
+  get_user,
+#   get_user_by_username,
+  get_all_users,
+  get_all_users_json,
+  update_user,
+  is_admin,
+  jwt_authenticate,
+  jwt_required,
 )
 
 user_views = Blueprint('user_views', __name__, template_folder='../templates')
 
+@user_views.route('/lecturer', methods=['POST'])
+def create_lecturer_user_action():
+    data = request.json
+    user = create_user(
+        name = data['name'],
+        username = data['username'],
+        password = data['password'],
+        user_type = 'Lecturer'
+    )
+    if user:
+        return jsonify({'message': f"lecturer account created"}),201
+    return jsonify({'error': f"failed to create lecturer account, username already in use"}),401
+
+
+@user_views.route('/admin', methods=['POST'])
+def create_admin_user_action():
+    data = request.json
+    user = create_user(
+        name = data['name'],
+        username = data['username'],
+        password = data['password'],
+        user_type = 'Admin'
+    )
+    if user:
+        return jsonify({'message': f"admin account created"}),201
+    return jsonify({'error': f"failed to create admin account, username already in use"}),401
 
 @user_views.route('/users', methods=['GET'])
-def get_user_page():
-  users = get_all_users()
-  return render_template('users.html', users=users)
-
-
-@user_views.route('/api/users', methods=['GET'])
+@jwt_required()
 def get_users_action():
+    if is_admin(jwt_current_user.id):
+        users = get_all_users_json()
+        return jsonify(users)
+    return jsonify({"error":"user not authorized for this operation"}),403
   users = get_all_users_json()
   return jsonify(users)
-
-
-@user_views.route('/api/users', methods=['POST'])
-def create_user_action():
-  data = request.json
-  user = create_user(
-    name = data['name'],
-    username=data['username'], 
-    password=data['password'], 
-    user_type = data['user_type'])
-  if user:
-    return jsonify({'message': f"user {data['username']} created"}),201
-  return jsonify({'error': f"failed to create user {data['username']}"}),401
-
-
-@user_views.route('/users/<int:user_id>', methods=['GET'])
-def show_user_action(user_id):
-  user = get_user(user_id)
-  if user:
-    return jsonify({'user': user.toJSON()})
-  return jsonify({'error': f"user {user_id} not found"})
