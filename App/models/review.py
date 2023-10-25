@@ -21,8 +21,8 @@ class Review(db.Model):
 
   def toJSON(self):
     return {
-        'Lecturer': self.lecturer_id,
-        'Student': self.student_id,
-        'reviewDate': self.review_date.strftime('%Y-%m-%d'),
-        'comment': self.comment
+        "lecturer": self.lecturer_id,
+        "student": self.student_id,
+        "reviewDate": self.review_date.strftime('%Y-%m-%d'),
+        "comment": self.comment
     }

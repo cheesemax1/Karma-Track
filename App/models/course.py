@@ -8,8 +8,8 @@ class Course(db.Model):
   course_code = db.Column(db.String(20), unique=True, nullable=False)
   course_name = db.Column(db.String(120), nullable=False)
 
-  def __init__(self, lecturer_id, course_code, course_name):
-    self.lecturer_id = lecturer_id
+  def __init__(self, course_code, course_name):
+    # self.lecturer_id = lecturer_id
     self.course_code = course_code
     self.course_name = course_name
 

@@ -13,7 +13,7 @@ class User(Person):
   courses = db.relationship('Course', backred=db.backref('user'), lazy ='joined')
   reviews = db.relationship('Review', backref=db.backref('user'), lazy ='joined')
 
-  def __init__(self, username, password, name, user_type):
+  def __init__(self, name, username, password,  user_type):
     self.name = name
     self.username = username
     self.user_type = user_type

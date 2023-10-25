@@ -52,3 +52,5 @@ def get_users_action():
         users = get_all_users_json()
         return jsonify(users)
     return jsonify({"error":"user not authorized for this operation"}),403
+  users = get_all_users_json()
+  return jsonify(users)
