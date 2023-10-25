@@ -10,12 +10,8 @@ class User(Person):
   username = db.Column(db.String(120), nullable=False, unique=True)
   user_type = db.Column(db.String(120), nullable=False)
   password = db.Column(db.String(120), nullable=False)
-  courses_teaching = db.relationship('Course',
-                                  backref=db.backref('user'),
-                                  lazy='joined')
-  reviews_made = db.relationship('Review',
-                                 backref=db.backref('user'),
-                                 lazy='joined')
+  courses = db.relationship('Course', backred=db.backref('user'), lazy ='joined')
+  reviews = db.relationship('Review', backref=db.backref('user'), lazy ='joined')
 
   def __init__(self, name, username, password,  user_type):
     self.name = name
@@ -33,34 +29,8 @@ class User(Person):
     return check_password_hash(self.password, password)
 
   def toJSON(self):
+    reviews = [review.toJSON() for review in self.reviews]
+    courses = [course.toJSON() for course in self.courses]
     return {'id': self.id, 'username': self.username, 'type': self.user_type}
 
-
-
-# from werkzeug.security import check_password_hash, generate_password_hash
-# from flask_login import UserMixin
-# from App.database import db
-
-# class User(db.Model, UserMixin):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username =  db.Column(db.String, nullable=False, unique=True)
-#     password = db.Column(db.String(120), nullable=False)
-
-#     def __init__(self, username, password):
-#         self.username = username
-#         self.set_password(password)
-
-#     def get_json(self):
-#         return{
-#             'id': self.id,
-#             'username': self.username
-#         }
-
-#     def set_password(self, password):
-#         """Create hashed password."""
-#         self.password = generate_password_hash(password, method='sha256')
-    
-#     def check_password(self, password):
-#         """Check hashed password."""
-#         return check_password_hash(self.password, password)
 
