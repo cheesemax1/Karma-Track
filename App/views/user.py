@@ -45,12 +45,6 @@ def create_admin_user_action():
         return jsonify({'message': f"admin account created"}),201
     return jsonify({'error': f"failed to create admin account, username already in use"}),401
 
-# @user_views.route('/identify', methods=['GET'])
-# @jwt_required()
-# def identify_user_action():
-#     user = jwt_current_user
-#     return jsonify({"Current User": user.toJSON()})
-
 @user_views.route('/users', methods=['GET'])
 @jwt_required()
 def get_users_action():
