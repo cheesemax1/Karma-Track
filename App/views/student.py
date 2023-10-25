@@ -13,9 +13,7 @@ from App.controllers import (
         is_admin
         )
 
-student_views = Blueprint('student_views',
-                                                    __name__,
-                                                    template_folder='../templates')
+student_views = Blueprint('student_views',__name__,template_folder='../templates')
 
 
 @student_views.route('/students', methods=['POST'])
