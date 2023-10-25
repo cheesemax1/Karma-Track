@@ -29,14 +29,17 @@ def get_users_action():
   return jsonify(users)
 
 
-@user_views.route('/users', methods=['POST'])
+@user_views.route('/api/users', methods=['POST'])
 def create_user_action():
-  data = request.form
-  user = create_user(data['username'], data['password'], data['name'],
-                     data['user_type'])
+  data = request.json
+  user = create_user(
+    name = data['name'],
+    username=data['username'], 
+    password=data['password'], 
+    user_type = data['user_type'])
   if user:
-    return jsonify({'message': f"user {data['username']} created"})
-  return jsonify({'error': f"failed to create user {data['username']}"})
+    return jsonify({'message': f"user {data['username']} created"}),201
+  return jsonify({'error': f"failed to create user {data['username']}"}),401
 
 
 @user_views.route('/users/<int:user_id>', methods=['GET'])

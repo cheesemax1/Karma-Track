@@ -10,7 +10,10 @@ from App.controllers import (
     get_all_users, 
     create_course,
     get_all_courses,
-    get_lecturer_courses
+    get_lecturer_courses,
+    get_student_courses,
+    get_student_reviews,
+    get_lecturer_reviews
     )
 
 # This commands file allow you to create convenient CLI commands for testing controllers
@@ -75,13 +78,47 @@ def create_course_command(lecturer_id, course_code, course_name):
 def list_course_command():
     print(get_all_courses())
 
-@course_cli.command("get-l", help="gets lecturer course")
+@course_cli.command("get-l", help="gets lecturer courses")
 @click.argument("lecturer_id")
 def get_lecturer_courses_command(lecturer_id):
     print(get_lecturer_courses(lecturer_id))
 
+@course_cli.command("get-s", help="gets student courses")
+@click.argument("student_id")
+def get_student_courses_command(student_id):
+    print(get_student_courses(student_id))
+
+
 app.cli.add_command(course_cli) # add the group to the cli
 
+'''
+Review Commands
+'''
+review_cli = AppGroup('review', help='review object commands') 
+@review_cli.command("create", help="creates a review")
+@click.argument("lecturer_id")
+@click.argument("student_id")
+@click.argument("comment")
+def create_review_command(user_id, student_id, comment):
+    create_review(user_id, student_id, comment)
+    print(f'review for {student_id} created by {lecturer_id}!')
+
+@review_cli.command("list", help="Lists reviews in the database")
+def list_review_command():
+    print(get_all_reviews())
+
+@review_cli.command("get-l", help="gets lecturer reviews")
+@click.argument("lecturer_id")
+def get_lecturer_reviews_command(lecturer_id):
+    print(get_lecturer_reviews(lecturer_id))
+
+@review_cli.command("get-s", help="gets student reviews")
+@click.argument("student_id")
+def get_student_reviews_command(student_id):
+    print(get_student_reviews(student_id))
+
+
+app.cli.add_command(course_cli) # add the group to the cli
 
 '''
 Test Commands
