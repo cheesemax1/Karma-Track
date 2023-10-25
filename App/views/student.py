@@ -1,96 +1,90 @@
 from flask import Blueprint, render_template, jsonify, request, send_from_directory
 from flask_jwt_extended import jwt_required, current_user as jwt_current_user
 from App.controllers import (
-    create_student, 
-    is_admin, 
-    update_student_name,
-    update_student_year, 
-    get_student,
-    get_all_students, 
-    upvote_student,
-    downvote_student, 
-    assign_course
-    )
+        create_student,
+        update_student_name,
+        update_student_year,
+        get_student,
+        get_student_by_name,
+        get_all_students_json,
+        upvote_student,
+        downvote_student,
+        assign_course_student,
+        is_admin
+        )
 
 student_views = Blueprint('student_views',
-                          __name__,
-                          template_folder='../templates')
+                                                    __name__,
+                                                    template_folder='../templates')
 
 
 @student_views.route('/students', methods=['POST'])
+@jwt_required()
 def create_student_action():
-  if is_admin(current_identity.id):
-    data = request.form
-    student = create_student(data['name'], data['year'])
-    if student:
-      return jsonify({'message': f"student {data['name']} created"})
-    return jsonify({'error': f"failed to create student {data['name']}"})
+    if is_admin(jwt_current_user.id):
+        data = request.json
+        student = create_student(data['name'], data['year'])
+        return jsonify({'message': f"student {data['name']} created"}),201 
+    return jsonify({'error': 'user not authorised for this operation'}),401
 
+@student_views.route('/students/<student_id>', methods=['GET'])
+def get_student_by_id_action(student_id):
+    student = get_student(student_id)
+    if student:
+        return jsonify(student.toJSON()),200
+    return jsonify({'error': 'student not found'}),404
+
+@student_views.route('/students/<student_name>', methods=['GET'])
+def get_student_by_name_action(student_name):
+    student = get_student_by_name(student_name)
+    if student:
+        return jsonify(student.toJSON()),200
+    return jsonify({'error': 'student not found'}),404
 
 @student_views.route('/students', methods=['GET'])
+@jwt_required()
 def get_students_action():
-  if is_admin(current_identity):
-    students = get_all_students()
-    return jsonify({'students': [student.toJSON() for student in students]})
-  return jsonify({'error': 'unauthorized'})
+    if is_admin(jwt_current_user.id):
+        students = get_all_students_json()
+        return jsonify(students)
+    return jsonify({'error': 'user not authorised for this operation'}),401
 
-
-@student_views.route('/students/<int:student_id>', methods=['GET'])
-def get_specfic_student_action(student_id):
-  student = get_student(student_id)
-  if student:
-    return jsonify(student)
-  return jsonify({'error': 'student not found'})
-
-
-@student_views.route('/students<int:student_id>', methods=['PUT'])
+@student_views.route('/students/name/<student_id>', methods=['PUT'])
+@jwt_required()
 def update_student_name_action(student_id):
-  if is_admin(current_identity.id):
-    data = request.form
-    student = update_student_name(student_id, data['name'])
-    if student:
-      return jsonify({'message': f"student {data['name']} updated"})
-    return jsonify({'error': f"failed to update student {data['name']}"})
+    if is_admin(jwt_current_user.id):
+        data = request.json
+        student = update_student_name(student_id, data['name'])
+        if student:
+            return jsonify({'message': f"student {student_id} updated"}),201
+        return jsonify({'error': f"student not found"}),404
+    return jsonify({'error': 'user not authorised for this operation'}),401
 
 
-@student_views.route('/students<int:student_id>', methods=['PUT'])
+@student_views.route('/students/year/<student_id>', methods=['PUT'])
+@jwt_required()
 def update_student_year_action(student_id):
-  if is_admin(current_identity.id):
-    data = request.form
-    student = update_student_year(student_id, data['year'])
-    if student:
-      return jsonify({'message': f"student {data['name']} updated"})
-    return jsonify({'error': f"failed to update student {data['name']}"})
+    if is_admin(jwt_current_user.id):
+        data = request.json
+        if data['year'] >= 1:
+            student = update_student_year(student_id, data['year'])
+            if student:
+                return jsonify({'message': f"student {student_id} updated"}),201
+            return jsonify({'error': f"student not found"}),404
+        return jsonify({'error':'new year entered < 1'}),400
+    return jsonify({'error': 'user not authorised for this operation'}),401
 
-
-@student_views.route('/students<int:student_id>', methods=['PUT'])
+@student_views.route('/students/up/<student_id>', methods=['PUT'])
 def upvote_student_action(student_id):
-  student = upvote_student(student_id)
-  if student:
-    return jsonify({'message': f"student {student_id} upvoted"})
-  return jsonify({'error': f"failed to upvote student {student_id}"})
-
-
-@student_views.route('/students<int:student_id>', methods=['PUT'])
-def downvote_student_action(student_id):
-  student = downvote_student(student_id)
-  if student:
-    return jsonify({'message': f"student {student_id} downvoted"})
-  return jsonify({'error': f"failed to downvote student {student_id}"})
-
-
-@student_views.route('/students<int:student_id>', methods=['PUT'])
-def assign_course_to_student_action(student_id):
-  if is_admin(current_identity.id):
-    data = request.form
-
-    student = assign_course(student_id, data['course_id'])
+    student = upvote_student(student_id)
     if student:
-      return jsonify({
-          'message':
-          f"student {student_id} assigned to course {data['course_id']}"
-      })
-    return jsonify({
-        'error':
-        f"failed to assign student {student_id} to course {data['course_id']}"
-    })
+        return jsonify({'message': f"student upvoted"}),201
+    return jsonify({'error': f"student not found"}),404
+
+
+@student_views.route('/students/down/<student_id>', methods=['PUT'])
+def downvote_student_action(student_id):
+    student = downvote_student(student_id)
+    if student:
+        return jsonify({'message': f"student downvoted"}),201
+    return jsonify({'error': f"student not found"}),404
