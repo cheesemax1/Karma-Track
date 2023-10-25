@@ -3,13 +3,13 @@ from flask_jwt_extended import create_access_token, jwt_required, JWTManager
 
 from App.models import User
 
-def jwt_authenticate(username, password):
+def jwt_authenticate(username, password):#returns access token
   user = User.query.filter_by(username=username).first()
   if user and user.check_password(password):
     return create_access_token(identity=username)
   return None
 
-def login(username, password):
+def login(username, password):#returns user causes error in postman
     user = User.query.filter_by(username=username).first()
     if user and user.check_password(password):
         return user
