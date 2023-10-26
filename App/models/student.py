@@ -8,7 +8,7 @@ class Student(Person):
   __tablename__ = 'student'
   year = db.Column(db.Integer, nullable=False)
   karma = db.Column(db.Integer, default=0)
-  reviews = db.relationship('Review', backref=db..backref('student'), lazy = 'joined')
+  reviews = db.relationship('Review', backref=db.backref('student'), lazy = 'joined')
   courses = db.relationship('Course',secondary=student_course,backref='enrolled_students')
 
 
