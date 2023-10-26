@@ -10,7 +10,7 @@ class User(Person):
   username = db.Column(db.String(120), nullable=False, unique=True)
   user_type = db.Column(db.String(120), nullable=False)
   password = db.Column(db.String(120), nullable=False)
-  courses = db.relationship('Course', backred=db.backref('user'), lazy ='joined')
+  courses = db.relationship('Course', backref=db.backref('user'), lazy ='joined')
   reviews = db.relationship('Review', backref=db.backref('user'), lazy ='joined')
 
   def __init__(self, name, username, password,  user_type):
