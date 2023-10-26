@@ -7,7 +7,6 @@ from .index import index_views
 from App.controllers import (
   create_user,
   get_user,
-#   get_user_by_username,
   get_all_users,
   get_all_users_json,
   update_user,
@@ -52,5 +51,5 @@ def get_users_action():
         users = get_all_users_json()
         return jsonify(users)
     return jsonify({"error":"user not authorized for this operation"}),403
-  users = get_all_users_json()
-  return jsonify(users)
+    users = get_all_users_json()
+    return jsonify(users)
