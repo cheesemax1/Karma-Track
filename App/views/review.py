@@ -28,13 +28,13 @@ def create_review_action():
 	if not student:
 			return jsonify({'error' : 'student not found'}),404
 	review = create_review(lecturer_id = user.id, student_id = student.id, comment = data['comment'])
-	return jsonify({'message': f"review by user {user.id} created for student {student.id}"})
+	return jsonify({'message': f"review created "}),201
 
 @review_views.route('/reviews/<int:review_id>', methods=['GET'])
 def get_review_action(review_id):
 	review = get_review(review_id)
 	if review:
-			return jsonify(review.to_json())
+			return jsonify(review.to_json()),200
 	return jsonify({'error': 'review not found'}),404
 
 @review_views.route('/reviews', methods=['GET'])
@@ -42,7 +42,7 @@ def get_review_action(review_id):
 def get_reviews_action():
 	if jwt_current_user.is_admin():
 			reviews = get_all_reviews_json()
-			return jsonify(reviews)
+			return jsonify(reviews),200
 	return jsonify({'error': 'user not authorised for this operation'}),401
 
 
@@ -51,7 +51,7 @@ def get_student_reviews_action(student_id):
 	student = get_student(student_id)
 	if student:
 			reviews = [review.to_json() for review in get_student_reviews(student_id)]
-			return jsonify(reviews)
+			return jsonify(reviews),200
 	return jsonify({'error' : 'student not found'}),404
 
 @review_views.route('/reviews/lecturers/<int:lecturer_id>', methods=['GET'])
@@ -59,5 +59,5 @@ def get_lecturer_reviews_action(lecturer_id):
 	user = get_user(lecturer_id)
 	if user:
 			reviews = [review.to_json() for review in get_lecturer_reviews(lecturer_id)]
-			return jsonify(reviews)
+			return jsonify(reviews),200
 	return jsonify({'error' : 'user not found'}),404

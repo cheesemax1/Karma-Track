@@ -22,7 +22,7 @@ def create_student_action():
     if jwt_current_user.is_admin():
         data = request.json
         student = create_student(data['name'], data['year'])
-        return jsonify({'message': f"student {data['name']} created"}),201 
+        return jsonify({'message': f"student created"}),201 
     return jsonify({'error': 'user not authorised for this operation'}),401
 
 @student_views.route('/students/<student_id>', methods=['GET'])
@@ -54,7 +54,7 @@ def update_student_name_action(student_id):
         data = request.json
         student = update_student_name(student_id, data['name'])
         if student:
-            return jsonify({'message': f"student {student_id} updated"}),201
+            return jsonify({'message': f"student updated"}),201
         return jsonify({'error': f"student not found"}),404
     return jsonify({'error': 'user not authorised for this operation'}),401
 
@@ -67,7 +67,7 @@ def update_student_year_action(student_id):
         if data['year'] >= 1:
             student = update_student_year(student_id, data['year'])
             if student:
-                return jsonify({'message': f"student {student_id} updated"}),201
+                return jsonify({'message': f"student updated"}),201
             return jsonify({'error': f"student not found"}),404
         return jsonify({'error':'new year entered < 1'}),400
     return jsonify({'error': 'user not authorised for this operation'}),401
