@@ -10,7 +10,7 @@ from App.controllers import (
         upvote_student,
         downvote_student,
         assign_course_student,
-        is_admin
+        # is_admin
         )
 
 student_views = Blueprint('student_views',__name__,template_folder='../templates')
@@ -19,7 +19,7 @@ student_views = Blueprint('student_views',__name__,template_folder='../templates
 @student_views.route('/students', methods=['POST'])
 @jwt_required()
 def create_student_action():
-    if is_admin(jwt_current_user.id):
+    if jwt_current_user.is_admin():
         data = request.json
         student = create_student(data['name'], data['year'])
         return jsonify({'message': f"student {data['name']} created"}),201 
@@ -29,20 +29,20 @@ def create_student_action():
 def get_student_by_id_action(student_id):
     student = get_student(student_id)
     if student:
-        return jsonify(student.toJSON()),200
+        return jsonify(student.to_json()),200
     return jsonify({'error': 'student not found'}),404
 
 @student_views.route('/students/<student_name>', methods=['GET'])
 def get_student_by_name_action(student_name):
     student = get_student_by_name(student_name)
     if student:
-        return jsonify(student.toJSON()),200
+        return jsonify(student.to_json()),200
     return jsonify({'error': 'student not found'}),404
 
 @student_views.route('/students', methods=['GET'])
 @jwt_required()
 def get_students_action():
-    if is_admin(jwt_current_user.id):
+    if jwt_current_user.is_admin():
         students = get_all_students_json()
         return jsonify(students)
     return jsonify({'error': 'user not authorised for this operation'}),401
@@ -50,7 +50,7 @@ def get_students_action():
 @student_views.route('/students/name/<student_id>', methods=['PUT'])
 @jwt_required()
 def update_student_name_action(student_id):
-    if is_admin(jwt_current_user.id):
+    if jwt_current_user.is_admin():
         data = request.json
         student = update_student_name(student_id, data['name'])
         if student:
@@ -62,7 +62,7 @@ def update_student_name_action(student_id):
 @student_views.route('/students/year/<student_id>', methods=['PUT'])
 @jwt_required()
 def update_student_year_action(student_id):
-    if is_admin(jwt_current_user.id):
+    if jwt_current_user.is_admin():
         data = request.json
         if data['year'] >= 1:
             student = update_student_year(student_id, data['year'])
