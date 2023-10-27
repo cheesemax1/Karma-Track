@@ -20,7 +20,7 @@ Page/Action Routes
 @jwt_required()
 def identify_user_action():
 	user = jwt_current_user
-	return jsonify({"Current User": f"{user.name}-{user.user_type}"})
+	return jsonify({"Current User": f"{user.name}-{user.user_type}"}),200
 
 @auth_views.route('/login', methods=['POST'])
 def user_login_api():

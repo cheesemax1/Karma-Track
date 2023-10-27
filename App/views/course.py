@@ -26,8 +26,8 @@ def create_course_action():
 			data['course_name']
 			)
 		if course:
-			return jsonify({'message': f"course {data['course_code']} created"}),201
-		return jsonify({'error': f"failed to create course {data['course_code']}"}),400
+			return jsonify({'message': f"course created"}),201
+		return jsonify({'error': f"failed to create course"}),400
 
 @course_views.route('/courses/<int:course_id>', methods=['GET'])
 def show_course_given_id_action(course_id):
@@ -41,8 +41,7 @@ def show_course_given_id_action(course_id):
 def show_all_courses_action():
 	if jwt_current_user.is_admin():
 		courses = get_all_courses_json()
-		return jsonify(courses)
-		# return jsonify({'courses': [course.to_json() for course in courses]}),200
+		return jsonify(courses),200
 	return jsonify({'error': 'user not authorized for this operation'}),401
 
 @course_views.route('/courses/<student_id>', methods=['GET'])
@@ -53,8 +52,8 @@ def show_all_courses_student_action(student_id):
 		return jsonify(
 			{'error': f"student not found"}),404	
 	courses = get_student_courses(student_id)
-	return jsonify(
-		{'courses': [course.to_json() for course in courses]}),200
+	courses = [course.to_json() for course in courses]
+	return jsonify(courses),200
 
 @course_views.route('/courses/<lecturer_id>', methods=['GET'])
 def show_all_courses_lecturer_action(lecturer_id):
@@ -63,8 +62,8 @@ def show_all_courses_lecturer_action(lecturer_id):
 		return jsonify(
 			{'error': f"User not found"}),404	
 	courses = get_lecturer_courses(lecturer_id)
-	return jsonify(
-		{'courses': [course.to_json() for course in courses]}),200
+	courses = [course.to_json() for course in courses]
+	return jsonify(courses),200
 
 @course_views.route('/courses/lecturer',methods=['PUT'])
 @jwt_required()
@@ -82,7 +81,7 @@ def assign_course_lecturer_action():
 			lecturer_id = lecturer_id
 		)
 		return jsonify(
-			{"message":f"course {course_id} assigned to user {lecturer_id}"}
+			{"message":f"course assigned to user"}
 			),201
 	return jsonify({"error":"user not authorized for this operation"}),403
 
@@ -102,7 +101,7 @@ def assign_course_student_action():
 			student_id = student_id
 		)
 		return jsonify(
-			{"message":f"course {course_id} assigned to student {student_id}"}
+			{"message":f"course assigned to student"}
 			),201
 	return jsonify({"error":"user not authorized for this operation"}),403
 	
