@@ -4,7 +4,9 @@ from App.database import db
 
 def create_student(name, year): 
     try:
-        student = Student(name=name, year=year)
+        student = Student(
+            name=name,
+            year=year)
         db.session.add(student)
         db.session.commit()
         return student
@@ -19,7 +21,7 @@ def get_student(id):
 def update_student_name(id, name):
     student = get_student(id)
     if student:
-        student.name = name
+        student.set_name(name)
         db.session.add(student)
         db.session.commit()
         return student
@@ -28,18 +30,18 @@ def update_student_name(id, name):
 def update_student_year(id, year):
     student = get_student(id)
     if student:
-        student.year = year
+        student.set_year(year)
         db.session.add(student)
         db.session.commit()
         return student
     return None
 
-#.all() as student name is not unique
+#.first() as student name is not unique
 def get_student_by_name(name):
-    students = Student.query.filter_by(name=name)
-    if not students:
-        return []
-    students = [student.toJSON() for student in students]
+    students = Student.query.filter_by(name=name).first()
+    # if not students:
+    #     return None
+    # students = [student.to_json() for student in students]
     return students
 
 def get_all_students():
@@ -49,13 +51,13 @@ def get_all_students_json():
     students = get_all_students()
     if not students:
         return []
-    students = [student.toJSON() for student in students]
+    students = [student.to_json() for student in students]
     return students
 
 def upvote_student(id):
     student = get_student(id)
     if student:
-        student.karma += 1
+        student.modify_karma("+")
         db.session.add(student)
         db.session.commit()
         return student
@@ -64,7 +66,7 @@ def upvote_student(id):
 def downvote_student(id):
     student = get_student(id)
     if student:
-        student.karma -= 1
+        student.modify_karma("-")
         db.session.add(student)
         db.session.commit()
         return student

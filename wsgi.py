@@ -30,13 +30,15 @@ from App.controllers import (
 	upvote_student,
 	downvote_student,
 	assign_course_student,
-	create_user,
+	create_admin,
+	create_lecturer,
 	get_user,
 	# get_user_by_username,
 	get_all_users,
 	get_all_users_json,
-	update_user,
-	is_admin,
+	update_user_name,
+	update_user_type,
+	# is_admin,
 		
 	)
 
@@ -59,13 +61,13 @@ def dev_initialize():
 	db.drop_all()
 	db.create_all()
 	# creating admin type users
-	roxa_admin = create_user('Roxa','adminroxa','roxa01','Admin')
-	marc_admin = create_user('Marc','adminmarc','marc02','Admin')
+	roxa_admin = create_admin('Roxa','adminroxa','roxa01')
+	marc_admin = create_admin('Marc','adminmarc','marc02')
 	
 	# creating lecturer type users
-	simon_lecturer = create_user('Simon','simonl','simonx1','Lecturer')
-	liam_lectuter = create_user('Liam','liaml','liamx2','Lecturer')
-	kari_lecturer = create_user('Kari','karil','karix3','Lecturer')
+	simon_lecturer = create_lecturer('Simon','simonl','simonx1')
+	liam_lectuter = create_lecturer('Liam','liaml','liamx2')
+	kari_lecturer = create_lecturer('Kari','karil','karix3')
 
 	# creating students
 	faith_student = create_student('Faith',3)
@@ -86,6 +88,8 @@ def dev_initialize():
 	math02 = create_course('MATH02','Intro to Statistics')
 	print('developer database intialized')
 
+
+
 '''
 User Commands
 '''
@@ -98,13 +102,18 @@ user_cli = AppGroup('user', help='User object commands')
 
 # Then define the command and any parameters and annotate it with the group (@)
 @user_cli.command("create", help="Creates a user")
+@click.argument("method", default="l")
 @click.argument("name", default="jane")
 @click.argument("username", default="defuser")
 @click.argument("password", default="defpass")
-@click.argument("user_type", default="Lecturer")
-def create_user_command( name, username, password, user_type):
-	create_user(name, username, password, user_type)
-	print(f'user {username} created!')
+def create_user_command(method, name, username, password):
+	if method == "l":
+		create_lecturer(name, username, password)
+		print(f"lecturer user {username} created!")
+	elif method == "a":
+		create_admin(name, username, password)
+		print(f"admin user {username} created!")
+
 
 # this command will be : flask user create bob bobpass
 @user_cli.command("get", help='gets a user')
@@ -126,7 +135,7 @@ def list_user_command(method):
 @click.argument("id", default=1)
 @click.argument("username", default="newdef")
 def update_user_command(id,username):
-	print(update_user(id,username))
+	print(update_user_name(id,username))
 
 @user_cli.command("admin", help="Determines if a user is an Admin")
 @click.argument("id", default=1)
@@ -181,11 +190,7 @@ def assign_course_student_command(course_id,person_id,method):
 		print(assign_course_lecturer(course_id,person_id))
 	else:
 		print(assign_course_student(course_id,person_id))
-# @course_cli.command("assign", help="assigns lecturer to course")
-# @click.argument("course_id", default=1)
-# @click.argument("lecturer_id", default=1)
-# def assign_course_lecturer_command(course_id, lecturer_id):
-# 	print(assign_course_lecturer(course_id,lecturer_id))
+
 
 
 
@@ -221,11 +226,11 @@ def get_reviews_command(method, searchval):
 	elif method == 'lecturer':
 		lecturer_id = searchval
 		# print(get_lecturer_reviews(lecturer_id))
-		print([review.toJSON() for review in get_lecturer_reviews(lecturer_id)])
+		print([review.to_json() for review in get_lecturer_reviews(lecturer_id)])
 	elif method == 'student':
 		student_id = searchval
 		# print(get_student_reviews(student_id))
-		print([review.toJSON() for review in get_student_reviews(student_id)])
+		print([review.to_json() for review in get_student_reviews(student_id)])
 
 app.cli.add_command(review_cli) # add the group to the cli
 
@@ -278,17 +283,6 @@ def modify_student_karma_command(method,id):
 	else:
 		print(downvote_student(id))
 
-# @student_cli.command("assign", help="assigns person (lecturer or student) to course")
-# @click.argument("course_id", default=1)
-# @click.argument("person_id", default=1)
-# @click.argument("method", default="lecturer")
-# def assign_course_student_command(course_id,person_id,method):
-# 	if method == "lecturer":
-# 		print(assign_course_lecturer(course_id,person_id))
-# 	else:
-# 		print(assign_course_student(course_id,person_id))		
-
-
 app.cli.add_command(student_cli) # add the group to the cli
 
 
@@ -307,6 +301,36 @@ def user_tests_command(type):
 		sys.exit(pytest.main(["-k", "UserIntegrationTests"]))
 	else:
 		sys.exit(pytest.main(["-k", "App"]))
-	
+@test.command("auth",help = "Run Auth tests")
+def auth_tests_command():
+	sys.exit(pytest.main(["-k", "AuthIntegrationTests"])) 
+@test.command("student", help="Run Student tests")
+@click.argument("type", default="all")
+def student_tests_command(type):
+	if type == "unit":
+		sys.exit(pytest.main(["-k", "StudentUnitTests"]))
+	elif type == "int":
+		sys.exit(pytest.main(["-k", "StudentIntegrationTests"])) 
+	else:
+		sys.exit(pytest.main(["-k", "App"]))
+		
+@test.command("course", help="Run course tests")
+@click.argument("type", default="all")
+def course_tests_command(type):
+	if type == "unit":
+		sys.exit(pytest.main(["-k", "CourseUnitTests"]))
+	elif type == "int":
+		sys.exit(pytest.main(["-k", "CourseIntegrationTests"]))
+	else:
+		sys.exit(pytest.main(["-k", "App"]))
 
+@test.command("review", help="Run review tests")
+@click.argument("type", default="all")
+def review_tests_command(type):
+	if type == "unit":
+		sys.exit(pytest.main(["-k", "ReviewUnitTests"]))
+	elif type == "int":
+		sys.exit(pytest.main(["-k", "ReviewIntegrationTests"]))
+	else:
+		sys.exit(pytest.main(["-k", "App"]))
 app.cli.add_command(test)

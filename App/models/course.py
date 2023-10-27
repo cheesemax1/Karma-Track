@@ -15,11 +15,14 @@ class Course(db.Model):
 
   def __repr__(self):
     return f'<Code:{self.course_code}, Lecturer :{self.lecturer_id}>'
-
-  def toJSON(self):
+    
+  def assign_lecturer(self, lecturer_id):
+    self.lecturer_id = lecturer_id
+  
+  def to_json(self):
     return {
         "id": self.course_id,
         "lecturer": self.lecturer_id,
-        "courseCode": self.course_code,
-        "courseName": self.course_name
+        "course_code": self.course_code,
+        "course_name": self.course_name
     }

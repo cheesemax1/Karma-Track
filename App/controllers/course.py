@@ -26,11 +26,11 @@ def assign_course_lecturer(id,lecturer_id):
   course = get_course(id)
   lecturer = get_user(lecturer_id)
   if (course and lecturer):
-    course.lecturer_id = lecturer_id
-    lecturer.courses.append(course)
+    course.assign_lecturer(lecturer_id)
+    lecturer.add_course(course)
     db.session.add_all({course,lecturer})
     db.session.commit()
-    return f"{course} - {lecturer}"
+    return course
   return None
 
 def assign_course_student(id,student_id):
@@ -38,10 +38,10 @@ def assign_course_student(id,student_id):
 	# course = Course.query.get(course_id)
 	student = get_student(student_id)
 	if course and student:
-		student.courses.append(course)
+		student.add_course(course)
 		db.session.add(student)
 		db.session.commit()
-		return f"{course} - {student}"
+		return course
 	return None  
 
   
@@ -66,5 +66,5 @@ def get_all_courses_json():
   courses = get_all_courses()
   if not courses:
     return []
-  courses = [course.toJSON() for course in courses]
+  courses = [course.to_json() for course in courses]
   return courses

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request, send_from_directory
 from flask_jwt_extended import jwt_required, current_user as jwt_current_user
-from App.controllers.user import is_admin
+# from App.controllers.user import is_admin
 from App.controllers.course import (
 		create_course,
 		get_course,
@@ -19,7 +19,7 @@ course_views = Blueprint('course_views', __name__, template_folder='../templates
 @course_views.route('/courses', methods=['POST'])
 @jwt_required()
 def create_course_action():
-	if is_admin(jwt_current_user.id):
+	if jwt_current_user.is_admin():
 		data = request.json
 		course = create_course( 
 			data['course_code'], 
@@ -33,16 +33,16 @@ def create_course_action():
 def show_course_given_id_action(course_id):
 	course = get_course(course_id)
 	if course:
-		return jsonify(course.toJSON()),200
+		return jsonify(course.to_json()),200
 	return jsonify({'error':f"course not found"}),404
 
 @course_views.route('/courses', methods=['GET'])
 @jwt_required()
 def show_all_courses_action():
-	if is_admin(jwt_current_user.id):
+	if jwt_current_user.is_admin():
 		courses = get_all_courses_json()
 		return jsonify(courses)
-		# return jsonify({'courses': [course.toJSON() for course in courses]}),200
+		# return jsonify({'courses': [course.to_json() for course in courses]}),200
 	return jsonify({'error': 'user not authorized for this operation'}),401
 
 @course_views.route('/courses/<student_id>', methods=['GET'])
@@ -54,7 +54,7 @@ def show_all_courses_student_action(student_id):
 			{'error': f"student not found"}),404	
 	courses = get_student_courses(student_id)
 	return jsonify(
-		{'courses': [course.toJSON() for course in courses]}),200
+		{'courses': [course.to_json() for course in courses]}),200
 
 @course_views.route('/courses/<lecturer_id>', methods=['GET'])
 def show_all_courses_lecturer_action(lecturer_id):
@@ -64,12 +64,12 @@ def show_all_courses_lecturer_action(lecturer_id):
 			{'error': f"User not found"}),404	
 	courses = get_lecturer_courses(lecturer_id)
 	return jsonify(
-		{'courses': [course.toJSON() for course in courses]}),200
+		{'courses': [course.to_json() for course in courses]}),200
 
 @course_views.route('/courses/lecturer',methods=['PUT'])
 @jwt_required()
 def assign_course_lecturer_action():
-	if is_admin(jwt_current_user.id):
+	if jwt_current_user.is_admin():
 		data = request.json
 		course_id = data['course_id']
 		lecturer_id = data['lecturer_id']
@@ -89,7 +89,7 @@ def assign_course_lecturer_action():
 @course_views.route('/courses/student',methods=['PUT'])
 @jwt_required()
 def assign_course_student_action():
-	if is_admin(jwt_current_user.id):
+	if jwt_current_user.is_admin():
 		data = request.json
 		course_id = data['course_id']
 		student_id = data['student_id']
