@@ -70,11 +70,17 @@ You just need create a manager command function, for example:
 user_cli = AppGroup('user', help='User object commands')
 
 @user_cli.cli.command("create-user")
-@click.argument("username")
-@click.argument("password")
-def create_user_command(name, username, password, user_type):
-    create_user(name, username, password, user_type)
-    print(f'{username} created!')
+@click.argument("method", default="l")
+@click.argument("name", default="jane")
+@click.argument("username", default="defuser")
+@click.argument("password", default="defpass")
+def create_user_command(method, name, username, password):
+	if method == "l":
+		create_lecturer(name, username, password)
+		print(f"lecturer user {username} created!")
+	elif method == "a":
+		create_admin(name, username, password)
+		print(f"admin user {username} created!")
 
 app.cli.add_command(user_cli) # add the group to the cli
 
