@@ -52,8 +52,8 @@ def show_all_courses_student_action(student_id):
 		return jsonify(
 			{'error': f"student not found"}),404	
 	courses = get_student_courses(student_id)
-	return jsonify(
-		{'courses': [course.to_json() for course in courses]}),200
+	courses = [course.to_json() for course in courses]
+	return jsonify(courses),200
 
 @course_views.route('/courses/<lecturer_id>', methods=['GET'])
 def show_all_courses_lecturer_action(lecturer_id):
@@ -62,8 +62,8 @@ def show_all_courses_lecturer_action(lecturer_id):
 		return jsonify(
 			{'error': f"User not found"}),404	
 	courses = get_lecturer_courses(lecturer_id)
-	return jsonify(
-		{'courses': [course.to_json() for course in courses]}),200
+	courses = [course.to_json() for course in courses]
+	return jsonify(courses),200
 
 @course_views.route('/courses/lecturer',methods=['PUT'])
 @jwt_required()
