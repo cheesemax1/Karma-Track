@@ -11,12 +11,14 @@ def create_review(lecturer_id, student_id, comment):
     review = Review(lecturer_id=lecturer_id,
                     student_id=student_id,
                     comment=comment)
-    db.session.add(review)
+    
     lecturer = get_user(lecturer_id)
     student = get_student(student_id)
     if lecturer and student:
-      lecturer.reviews.append(review)
-      student.reviews.append(review)
+      # db.session.add(review)
+      lecturer.add_review(review)
+      student.add_review(review)
+      db.session.add_all({review,lecturer,student})
       db.session.commit()
       return review
   except Exception as e:
@@ -37,7 +39,7 @@ def get_all_reviews_json():
   reviews = get_all_reviews()
   if not reviews:
     return []
-  return [review.toJSON() for review in reviews]
+  return [review.to_json() for review in reviews]
 
 def get_student_reviews(student_id):
   return Review.query.filter(Review.student_id == student_id).all()
