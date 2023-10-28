@@ -72,6 +72,18 @@ class UserUnitTests(unittest.TestCase):
         user = User("testname" , "l1test", "testpass" , "Lecturer")
         user.set_user_type("Admin")
         assert user.user_type == "Admin"
+        
+    def test_add_review(self):
+        review = Review(1,1,"user unit test comment")
+        user = User("testname" , "l1test", "testpass" , "Lecturer")
+        user.add_review(review)
+        assert review in user.reviews
+    
+    def test_add_course(self):
+        course = Course("UTest01","User Unit Test Course")
+        user = User("testname" , "l1test", "testpass" , "Lecturer")
+        user.add_course(course)
+        assert course in user.courses 
 
     def test_get_json(self):
         user = User("testname" , "l1test", "testpass" , "Lecturer")
